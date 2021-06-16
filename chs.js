@@ -231,6 +231,8 @@ var cnPostfix = {
 //需排除的，正则匹配
 var cnExcludeWhole = [
     /^(\d+)$/,
+    /^([\d\.,]+)$/,
+    /^([\d\.,]+) \/ ([\d\.,]+)$/,
     /^([\d\.]+)e(\d+)$/,
     /^([\d\.]+)$/,
 ];
@@ -252,8 +254,10 @@ var cnRegReplace = new Map([
     [/^Your merge levels are providing a (.+)x multiplier to gilded points, and a (.+)x multiplier to work.$/, '您的合并等级为镀金点提供了 $1 倍的乘数，并为工作提供了 $2 倍的乘数。'],
     [/^Cost: (.+) merge tokens\n(.+)Level: (.+)\/(.+)\n(.+)Multiplies Auto-Merge speed by (.+)x. \(\+(.+)x speed additively$/, '成本：$1 合并令牌\n 等级：$3\/$4\n 自动合并速度乘以 $6 倍。 \(\+$7x 速度加成'],
     [/^Cost: (.+) merge tokens\n(.+)Level: (.+)\/(.+)\n(.+)Multiplies Merge Token gain by (.+)x. \(Base effect (.+)x$/, '成本：$1 合并令牌\n 等级：$3\/$4\n 合并令牌收益乘以 $6 倍。 \(基础效果 $7x'],
-    [/^Cost: (.+) merge tokens\n(.+)Level: (.+)\/(.+)\n(.+)Multiplies Work gain by (.+)x. \(Base effect (.+)x$/, '成本：$1 合并令牌\n 等级：$3\/$4\n 工作收益乘以 $6 倍。 \(基础效果 $7x'],
-    [/^Cost: (.+) merge tokens\n(.+)Level: (.+)\/(.+)\n(.+)Multiplies Gilded Point gain by (.+)x. \(Base effect (.+)x$/, '成本：$1 合并令牌\n 等级：$3\/$4\n 镀金点收益乘以 $6 倍。 \(基础效果 $7x'],
+    [/^Cost: (.+) merge tokens\n(.+)Level: (.+)\/(.+)\n(.+)Multiplies Work gain by (.+). \(Basic effect (.+).$/, '成本：$1 合并令牌\n 等级：$3\/$4\n 工作收益乘以 $6。 \(基础效果 $7.'],
+    [/^Cost: (.+) merge tokens\n(.+)Level: (.+)\/(.+)\n(.+)Multiplies Gilded Point gain by (.+). \(Basic effect (.+).$/, '成本：$1 合并令牌\n 等级：$3\/$4\n 镀金点收益乘以 $6。 \(基础效果 $7.'],
+    [/^Cost: (.+) merge tokens\n(.+)Level: (.+)\/(.+)\n(.+)Multiplies Point gain by (.+). \(Basic effect (.+).$/, '成本：$1 合并令牌\n 等级：$3\/$4\n 点收益乘以 $6。 \(基础效果 $7.'],
+    [/^Cost: (.+) merge tokens\n(.+)Level: (.+)\/(.+)\n(.+)Gilded Mergeables are (.+) cheaper. \(Base effect (.+).$/, '成本：$1 合并令牌\n 等级：$3\/$4\n 已镀金可合并块便宜 $6。 \(基础效果 $7.'],
     [/^Cost: (.+) merge tokens\n(.+)Level: (.+)\/(.+)\n(.+)Gilded Mergeables are (.+)x cheaper. \(Base effect (.+)x$/, '成本：$1 合并令牌\n 等级：$3\/$4\n 镀金 可合并块 便宜 $6x。。 \(基础效果 $7x'],
     [/^Cost: (.+) merge tokens\n(.+)Level: (.+)\/(.+)\n(.+)Adds (.+) to the More Mergeables cap..$/, '成本：$1 合并令牌\n 等级：$3\/$4\n将更多可合并上限增加 $6..'],
     [/^You have (.+) merge levels$/, '你有 $1 合并等级'],
