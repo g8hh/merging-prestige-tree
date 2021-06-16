@@ -3,7 +3,7 @@
 function respecBuyables(layer) {
 	if (!layers[layer].buyables) return
 	if (!layers[layer].buyables.respec) return
-	if (!player[layer].noRespecConfirm && !confirm(tmp[layer].buyables.respecMessage || "Are you sure you want to respec? This will force you to do a \"" + (tmp[layer].name ? tmp[layer].name : layer) + "\" reset as well!")) return
+	if (!confirm("Are you sure you want to respec? This will force you to do a \"" + (tmp[layer].name ? tmp[layer].name : layer) + "\" reset as well!")) return
 	run(layers[layer].buyables.respec, layers[layer].buyables)
 	updateBuyableTemp(layer)
 	document.activeElement.blur()
@@ -14,11 +14,6 @@ function canAffordUpgrade(layer, id) {
 	if (tmp[layer].upgrades[id].canAfford !== undefined) return tmp[layer].upgrades[id].canAfford
 	let cost = tmp[layer].upgrades[id].cost
 	return canAffordPurchase(layer, upg, cost)
-}
-
-function canBuyBuyable(layer, id) {
-	let b = temp[layer].buyables[id]
-	return (b.unlocked && b.canAfford && player[layer].buyables[id].lt(b.purchaseLimit))
 }
 
 function hasUpgrade(layer, id) {
@@ -61,15 +56,6 @@ function setClickableState(layer, id, state) {
 	player[layer].clickables[id] = state
 }
 
-
-function getGridData(layer, id) {
-	return (player[layer].grid[id])
-}
-
-function setGridData(layer, id, data) {
-	player[layer].grid[id] = data
-}
-
 function upgradeEffect(layer, id) {
 	return (tmp[layer].upgrades[id].effect)
 }
@@ -89,11 +75,6 @@ function clickableEffect(layer, id) {
 function achievementEffect(layer, id) {
 	return (tmp[layer].achievements[id].effect)
 }
-
-function gridEffect(layer, id) {
-	return (gridRun(layer, 'getEffect', player[layer].grid[id], id))
-}
-
 
 function canAffordPurchase(layer, thing, cost) {
 
@@ -171,7 +152,7 @@ function buyMaxBuyable(layer, id) {
 function buyBuyable(layer, id) {
 	if (!player[layer].unlocked) return
 	if (!tmp[layer].buyables[id].unlocked) return
-	if (!tmp[layer].buyables[id].canBuy) return
+	if (!tmp[layer].buyables[id].canAfford) return
 
 	run(layers[layer].buyables[id].buy, layers[layer].buyables[id])
 	updateBuyableTemp(layer)
@@ -184,14 +165,6 @@ function clickClickable(layer, id) {
 
 	run(layers[layer].clickables[id].onClick, layers[layer].clickables[id])
 	updateClickableTemp(layer)
-}
-
-function clickGrid(layer, id) {
-	if (!player[layer].unlocked) return
-	if (!run(layers[layer].grid.getUnlocked, layers[layer].grid, id)) return
-	if (!gridRun(layer, 'getCanClick', player[layer].grid[id], id)) return
-
-	gridRun(layer, 'onClick', player[layer].grid[id], id)
 }
 
 // Function to determine if the player is in a challenge
@@ -217,10 +190,8 @@ function showTab(name) {
 	player.tab = name
 	if (player.navTab == "none" && (tmp[name].row !== "side") && (tmp[name].row !== "otherside")) player.lastSafeTab = name
 	delete player.notify[name]
-	updateTabFormats()
 	needCanvasUpdate = true
 	document.activeElement.blur()
-
 }
 
 function showNavTab(name) {
@@ -229,7 +200,6 @@ function showNavTab(name) {
 	var toTreeTab = name == "tree"
 	player.navTab = name
 	player.notify[name] = false
-	updateTabFormats()
 	needCanvasUpdate = true
 }
 
@@ -249,20 +219,7 @@ function layOver(obj1, obj2) {
 
 function prestigeNotify(layer) {
 	if (layers[layer].prestigeNotify) return layers[layer].prestigeNotify()
-	
-	if (isPlainObject(tmp[layer].tabFormat)) {
-		for (subtab in tmp[layer].tabFormat){
-			if (subtabResetNotify(layer, 'mainTabs', subtab))
-				return true
-		}
-	}
-	for (family in tmp[layer].microtabs) {
-		for (subtab in tmp[layer].microtabs[family]){
-			if (subtabResetNotify(layer, family, subtab))
-				return true
-		}
-	}
-	if (tmp[layer].autoPrestige || tmp[layer].passiveGeneration) return false
+	else if (tmp[layer].autoPrestige || tmp[layer].passiveGeneration) return false
 	else if (tmp[layer].type == "static") return tmp[layer].canReset
 	else if (tmp[layer].type == "normal") return (tmp[layer].canReset && (tmp[layer].resetGain.gte(player[layer].points.div(10))))
 	else return false
@@ -287,7 +244,7 @@ function subtabResetNotify(layer, family, id) {
 	if (family == "mainTabs") subtab = tmp[layer].tabFormat[id]
 	else subtab = tmp[layer].microtabs[family][id]
 	if (subtab.embedLayer) return tmp[subtab.embedLayer].prestigeNotify
-	else return subtab.prestigeNotify
+	else return false
 }
 
 function nodeShown(layer) {
@@ -308,7 +265,6 @@ function layerunlocked(layer) {
 function keepGoing() {
 	player.keepGoing = true;
 	needCanvasUpdate = true;
-	goBack()
 }
 
 function toNumber(x) {
@@ -322,7 +278,6 @@ function updateMilestones(layer) {
 		if (!(hasMilestone(layer, id)) && layers[layer].milestones[id].done()) {
 			player[layer].milestones.push(id)
 			if (tmp[layer].milestonePopups || tmp[layer].milestonePopups === undefined) doPopup("milestone", tmp[layer].milestones[id].requirementDescription, "Milestone Gotten!", 3, tmp[layer].color);
-			player[layer].lastMilestone = id
 		}
 	}
 }
@@ -361,28 +316,19 @@ function addTime(diff, layer) {
 	else data.timePlayed = time
 }
 
-shiftDown = false
-ctrlDown = false
-
 document.onkeydown = function (e) {
 	if (player === undefined) return;
 	if (gameEnded && !player.keepGoing) return;
-	shiftDown = e.shiftKey
-	ctrlDown = e.ctrlKey
+	let shiftDown = e.shiftKey
+	let ctrlDown = e.ctrlKey
 	let key = e.key
 	if (ctrlDown) key = "ctrl+" + key
 	if (onFocused) return
 	if (ctrlDown && hotkeys[key]) e.preventDefault()
 	if (hotkeys[key]) {
-		let k = hotkeys[key]
-		if (player[k.layer].unlocked && tmp[k.layer].hotkeys[k.id].unlocked)
-			k.onPress()
+		if (player[hotkeys[key].layer].unlocked)
+			hotkeys[key].onPress()
 	}
-}
-
-document.onkeyup = function (e) {
-	shiftDown = e.shiftKey
-	ctrlDown = e.ctrlKey
 }
 
 var onFocused = false
@@ -390,6 +336,19 @@ function focused(x) {
 	onFocused = x
 }
 
+function prestigeButtonText(layer) {
+	if (layers[layer].prestigeButtonText !== undefined)
+		return layers[layer].prestigeButtonText()
+	else if (tmp[layer].type == "normal")
+		return `${player[layer].points.lt(1e3) ? (tmp[layer].resetDescription !== undefined ? tmp[layer].resetDescription : "Reset for ") : ""}+<b>${formatWhole(tmp[layer].resetGain)}</b> ${tmp[layer].resource} ${tmp[layer].resetGain.lt(100) && player[layer].points.lt(1e3) ? `<br><br>Next at ${(tmp[layer].roundUpCost ? formatWhole(tmp[layer].nextAt) : format(tmp[layer].nextAt))} ${tmp[layer].baseResource}` : ""}`
+	else if (tmp[layer].type == "static")
+		return `${tmp[layer].resetDescription !== undefined ? tmp[layer].resetDescription : "Reset for "}+<b>${formatWhole(tmp[layer].resetGain)}</b> ${tmp[layer].resource}<br><br>${player[layer].points.lt(30) ? (tmp[layer].baseAmount.gte(tmp[layer].nextAt) && (tmp[layer].canBuyMax !== undefined) && tmp[layer].canBuyMax ? "Next:" : "Req:") : ""} ${formatWhole(tmp[layer].baseAmount)} / ${(tmp[layer].roundUpCost ? formatWhole(tmp[layer].nextAtDisp) : format(tmp[layer].nextAtDisp))} ${tmp[layer].baseResource}		
+		`
+	else if (tmp[layer].type == "none")
+		return ""
+	else
+		return "You need prestige button text"
+}
 
 function isFunction(obj) {
 	return !!(obj && obj.constructor && obj.call && obj.apply);
@@ -401,14 +360,7 @@ function isPlainObject(obj) {
 
 document.title = modInfo.name
 
-// Converts a string value to whatever it's supposed to be
-function toValue(value, oldValue) {
-	if (oldValue instanceof Decimal)
-		return new Decimal (value)
-	else if (!isNaN(oldValue))
-		return value.toNumber()
-	else return value
-}
+
 
 // Variables that must be defined to display popups
 var activePopups = [];
@@ -450,19 +402,10 @@ function adjustPopupTime(diff) {
 }
 
 function run(func, target, args = null) {
-	if (isFunction(func)) {
+	if (!!(func && func.constructor && func.call && func.apply)) {
 		let bound = func.bind(target)
 		return bound(args)
 	}
 	else
 		return func;
-}
-
-function gridRun(layer, func, data, id) {
-	if (isFunction(layers[layer].grid[func])) {
-		let bound = layers[layer].grid[func].bind(layers[layer].grid)
-		return bound(data, id)
-	}
-	else
-		return layers[layer].grid[func];
 }

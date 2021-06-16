@@ -1,6 +1,6 @@
 // ************ Save stuff ************
 function save() {
-	localStorage.setItem(modInfo.id, btoa(unescape(encodeURIComponent(JSON.stringify(player)))));
+	localStorage.setItem(modInfo.id, btoa(JSON.stringify(player)));
 }
 function startPlayerBase() {
 	return {
@@ -19,10 +19,9 @@ function startPlayerBase() {
 		hasNaN: false,
 		hideChallenges: false,
 		showStory: true,
-		forceOneTab: false,
 		points: modInfo.initialStartPoints,
 		subtabs: {},
-		lastSafeTab: (readData(layoutInfo.showTree) ? "none" : layoutInfo.startTab)
+		lastSafeTab: (layoutInfo.showTree ? "none" : layoutInfo.startTab)
 	};
 }
 function getStartPlayer() {
@@ -66,26 +65,20 @@ function getStartLayerData(layer) {
 	if (layerdata.unlocked === undefined)
 		layerdata.unlocked = true;
 	if (layerdata.total === undefined)
-		layerdata.total = decimalZero;
+		layerdata.total = new Decimal(0);
 	if (layerdata.best === undefined)
-		layerdata.best = decimalZero;
+		layerdata.best = new Decimal(0);
 	if (layerdata.resetTime === undefined)
 		layerdata.resetTime = 0;
-	if (layerdata.forceTooltip === undefined)
-		layerdata.forceTooltip = false;
 
 	layerdata.buyables = getStartBuyables(layer);
-	if (layerdata.noRespecConfirm === undefined) layerdata.noRespecConfirm = false
 	if (layerdata.clickables == undefined)
 		layerdata.clickables = getStartClickables(layer);
-	layerdata.spentOnBuyables = decimalZero;
+	layerdata.spentOnBuyables = new Decimal(0);
 	layerdata.upgrades = [];
 	layerdata.milestones = [];
-	layerdata.lastMilestone = null;
 	layerdata.achievements = [];
 	layerdata.challenges = getStartChallenges(layer);
-	layerdata.grid = getStartGrid(layer);
-
 	return layerdata;
 }
 function getStartBuyables(layer) {
@@ -93,7 +86,7 @@ function getStartBuyables(layer) {
 	if (layers[layer].buyables) {
 		for (id in layers[layer].buyables)
 			if (isPlainObject(layers[layer].buyables[id]))
-				data[id] = decimalZero;
+				data[id] = new Decimal(0);
 	}
 	return data;
 }
@@ -115,20 +108,6 @@ function getStartChallenges(layer) {
 	}
 	return data;
 }
-function getStartGrid(layer) {
-	let data = {};
-	if (! layers[layer].grid) return data
-	if (layers[layer].grid.maxRows === undefined) layers[layer].grid.maxRows=layers[layer].grid.rows
-	if (layers[layer].grid.maxCols === undefined) layers[layer].grid.maxCols=layers[layer].grid.cols
-
-	for (let y = 1; y <= layers[layer].grid.maxRows; y++) {
-		for (let x = 1; x <= layers[layer].grid.maxCols; x++) {
-			data[100*y + x] = layers[layer].grid.getStartData(100*y + x)
-		}
-	}
-	return data;
-}
-
 function fixSave() {
 	defaultData = getStartPlayer();
 	fixData(defaultData, player);
@@ -189,7 +168,7 @@ function load() {
 	if (get === null || get === undefined)
 		player = getStartPlayer();
 	else
-		player = Object.assign(getStartPlayer(), JSON.parse(decodeURIComponent(escape(atob(get)))));
+		player = Object.assign(getStartPlayer(), JSON.parse(atob(get)));
 	fixSave();
 
 	if (player.offlineProd) {
@@ -207,7 +186,6 @@ function load() {
 	setupTemp();
 	updateTemp();
 	updateTemp();
-	updateTabFormats()
 	loadVue();
 }
 function setupModInfo() {

@@ -5,17 +5,18 @@ Challenges can have fully customizable win conditions. Useful functions for deal
 - inChallenge(layer, id): determine if the player is in a given challenge (or another challenge on the same layer that counts as this one).
 - hasChallenge(layer, id): determine if the player has completed the challenge.
 - challengeCompletions(layer, id): determine how many times the player completed the challenge.
-- maxedChallenge(layer, id): determines if the player has reached the maximum completions.
 - challengeEffect(layer, id): Returns the current effects of the challenge, if any.
 
 Challenges are stored in the following format:
 
 ```js
 challenges: {
+    rows: # of rows,
+    cols: # of columns,
     11: {
         name: "Ouch",
         challengeDescription: "description of ouchie",
-        canComplete: function() {return player.points.gte(100)},
+        goal: new Decimal(100),
         etc
     },
     etc
@@ -47,10 +48,6 @@ Individual Challenges can have these features:
 - unlocked(): **optional**. A function returning a bool to determine if the challenge is visible or not. Default is unlocked.
 
 - onComplete() - **optional**. this function will be called when the challenge is completed when previously incomplete.
-
-- onEnter() - **optional**. this function will be called when entering the challenge
-
-- onExit() - **optional**. this function will be called when exiting the challenge in any way
 
 - countsAs: **optional**. If a challenge combines the effects of other challenges in this layer, you can use this. An array of challenge ids. The player is effectively in all of those challenges when in the current one.
 
