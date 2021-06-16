@@ -152,7 +152,7 @@ addLayer("p", {
       [41]: new Decimal(0), [42]: new Decimal(0), [43]: new Decimal(0), [44]: new Decimal(0), [45]: new Decimal(0) } // Optional default Clickable state
     }
   },
-  image:"/aptmammerge.png",
+  image:"./aptmammerge.png",
   color: "#4BDC13",
   requires: new Decimal(10), // Can be a function that takes requirement increases into account
   resource: "work", // Name of prestige currency
@@ -1728,7 +1728,7 @@ addLayer("mp", {
       best: new Decimal(0),
     }
   },
-  image:"aptmammerge.png",
+  image:"./aptmammerge.png",
   color: "#3262a8",
   requires: new Decimal(10), // Can be a function that takes requirement increases into account
   resource: "merge tokens", // Name of prestige currency
