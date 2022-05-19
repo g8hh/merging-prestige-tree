@@ -293,7 +293,7 @@ var cnRegReplace = new Map([
     [/^You are gaining (.+) work per second$/, '你每秒获得 $1 工作'],
     [/^Cost: (.+) work\n(.+)Level: (.+)\/(.+)\n(.+)Adds (.+) mergeables.$/, '成本：$1 工作\n 级别：$3\/$4\n 添加 $5 个可合并块。'],
     [/^Your mergers are multiplying points by (.+).$/, '您的合并将点数乘以 $1。'],
-    [/^Cost: (.+) work\n(.+)Level: (.+)\/(.+)\n(.+)Increases the beginning tier of Mergeables by (.+), but multiplies Mergeable cost by (.+)$/, '成本：$1 工作\ n等级：$3\/$4 \ n增加了$6 可合并初始层，但乘以 $7 可合并成本'],
+    [/^Cost: (.+) work\n(.+)Level: (.+)\/(.+)\n(.+)Increases the beginning tier of Mergeables by (.+), but multiplies Mergeable cost by (.+)$/, '成本：$1 工作\n等级：$3\/$4 \n增加了$6 可合并初始层，但乘以 $7 可合并成本'],
     [/^Your merge levels are providing a (.+)x multiplier to gilded points, and a (.+)x multiplier to work.$/, '您的合并等级为镀金点提供了 $1 倍的乘数，并为工作提供了 $2 倍的乘数。'],
     [/^Cost: (.+) merge tokens\n(.+)Level: (.+)\/(.+)\n(.+)Multiplies Auto-Merge speed by (.+)x. \(\+(.+)x speed additively$/, '成本：$1 合并令牌\n 等级：$3\/$4\n 自动合并速度乘以 $6 倍。 \(\+$7x 速度加成'],
     [/^Cost: (.+) merge tokens\n(.+)Level: (.+)\/(.+)\n(.+)Multiplies Merge Token gain by (.+)x. \(Base effect (.+)x$/, '成本：$1 合并令牌\n 等级：$3\/$4\n 合并令牌收益乘以 $6 倍。 \(基础效果 $7x'],
